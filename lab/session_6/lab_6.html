@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<title>Lab Session 6</title>
+
+<!-- https://yihui.name/en/2018/07/latex-math-markdown/-->
+<!-- Just one possible MathJax CDN below. You may use others. -->
+<!--<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"async></script>-->
+<!--<script src="//yihui.name/js/math-code.js"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.js"></script>
+
+<!-- calender cdn -->
+<script src="https://cdn.rawgit.com/mdehoog/Semantic-UI-Calendar/76959c6f7d33a527b49be76789e984a0a407350b/dist/calendar.min.js"></script>
+
+<!-- data table cdn -->
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.min.css">
+
+
+
+<!-- better use rmarkdown internal syntax highlighting -->
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/languages/r.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>--->
+<!-- down before body tag -->
+<!--<script>hljs.initHighlightingOnLoad();</script>-->
+
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<style type="text/css">
+pre, code {
+  background-color: #f7f7f7;
+  border-radius: 3px;
+  color: #333;
+  white-space: pre-wrap;    
+}
+pre {
+  border-radius: 3px;
+  margin: 5px 0px 10px 0px;
+  padding: 10px;
+}
+pre:not([class]) {
+  background-color: white;
+}
+code:not([class]) {
+  background-color: white;
+}
+code {
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 85%;
+}
+p > code, li > code {
+  padding: 2px 0px;
+}
+</style>
+
+</head>
+<body>
+<div class = "wrapper">
+<br> <br>
+<div class="ui text container">
+<h1 class="ui header">
+Lab Session 6
+</h1>
+<ul>
+<li>Gelman Rubin Stats = Ration from within and between variance of MCMC Chains.<br />
+</li>
+<li><span class="math inline">\(Naive SE = \frac{SD}{\sqrt{n}}\)</span></li>
+<li>Time-serieis SE (+ penalty)</li>
+</ul>
+<p><span class="math display">\[Y \sim f(y|\theta, \alpha)\]</span></p>
+<p><span class="math display">\[\theta = g(X, \beta)\]</span></p>
+<ul>
+<li>probability function = binomial for binary data</li>
+<li>link function = logit</li>
+</ul>
+<p><span class="math display">\[logit(p) = \beta_0 + \beta_1 x\]</span></p>
+<ul>
+<li>Phi function translates between PDF to CDP and the logit the other way around.</li>
+</ul>
+<h2 id="packages">Packages</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pacman<span class="op">::</span><span class="kw">p_load</span>(rjags, dplyr, purrr, tidyr, ggplot2, broom, rjags)
+ggplot2<span class="op">::</span><span class="kw">theme_set</span>(<span class="kw">theme_bw</span>())
+<span class="co"># tinytex::install_tinytex()</span>
+devtools<span class="op">::</span><span class="kw">session_info</span>()
+<span class="kw">set.seed</span>(<span class="dv">2018</span>)</code></pre></div>
+<h2 id="data">Data</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat &lt;-<span class="st"> </span><span class="kw">get</span>(<span class="kw">load</span>(<span class="st">&quot;../data/Bayes_Student_Survey.RData&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">friend_log =</span> <span class="kw">log</span>(friend <span class="op">+</span><span class="st"> </span><span class="dv">1</span>))
+
+<span class="kw">glimpse</span>(dat)</code></pre></div>
+<p>A reduced dataset of Student Panel Survey during the Lecture in Introduction to Political Methodology Winter term 2016/2017 at the University of Konstanz</p>
+<ul>
+<li><code>poleff</code> Political Efficacy (Likert Score based on 7 items) A larger value = higher level of efficacy</li>
+<li><code>friend</code> Number of alteri in friendship network</li>
+<li><code>poldisc</code> Number of alteri in political discussion network</li>
+<li><code>lr.self</code> Ideological orientation (left right self-placement) 1: Left &lt;- -&gt; 11: Right</li>
+<li><code>lr.self.2</code> Ideological orientation (left right self-placement, second measurement) 1: Left &lt;- -&gt; 11: Right</li>
+<li><code>univ.election</code> Vote intention at the next university election. 1: Yes; 0: other (No and DK)</li>
+<li><code>polint</code> interest at university politics 1: not interested at all &lt;- -&gt; 5 strongly interested</li>
+<li><code>tuition</code> opinion on the general tuition fee for German universities 1: support; 2: reject; 3: indifferent</li>
+<li><code>acceptable</code> acceptable level of the tuition fee (in Euro per Semester) (Only those who support the tuition fee or indifferent)</li>
+<li>protest1 - protest6 willingness to participate a protest action against the general tuition fee 1: yes; 0: no
+<ul>
+<li><code>protest1</code> demonstration in Konstanz</li>
+<li><code>protest2</code> demonstration in Stuttgart</li>
+<li><code>protest3</code> giving signature at petitions</li>
+<li><code>protest4</code> strike</li>
+<li><code>protest5</code> occupation of university buildings</li>
+<li><code>protest6</code> legal dispute at courts</li>
+</ul></li>
+</ul>
+<h1 id="models">Models</h1>
+<h2 id="binary-logit-model">Binary Logit Model</h2>
+<h3 id="jags-modell">JAGS Modell</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">logit.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">  for (i in 1:N){</span>
+<span class="st">    y[i] ~ dbern(p[i])</span>
+<span class="st">    logit(p[i]) &lt;- ystar[i]</span>
+<span class="st">    ystar[i] &lt;- alpha + beta * x[i]</span>
+<span class="st">  }</span>
+
+<span class="st">  alpha ~ dnorm(0, 0.0001)</span>
+<span class="st">  beta ~ dnorm(0, 0.0001)</span>
+
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(logit.model, <span class="st">&quot;Bayes_Binary_Logit_Student_Survey.bug&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(
+  <span class="dt">y =</span> dat<span class="op">$</span>univ.election,
+  <span class="dt">x =</span> dat<span class="op">$</span>poleff,
+  <span class="dt">N =</span> <span class="kw">nrow</span>(dat)
+)
+
+jags.logit &lt;-<span class="st"> </span><span class="kw">jags.model</span>(
+  <span class="dt">file =</span> <span class="st">&quot;Bayes_Binary_Logit_Student_Survey.bug&quot;</span>,
+  <span class="dt">data =</span> jags.data, 
+  <span class="dt">n.chains =</span> <span class="dv">3</span>
+)
+
+jags.logit.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(
+  jags.logit,
+  <span class="dt">variable.names =</span> <span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>),
+  <span class="dt">n.iter =</span> <span class="dv">20000</span>, 
+  <span class="dt">thin =</span> <span class="dv">50</span>
+)</code></pre></div>
+<h3 id="checking-convergence">Checking convergence</h3>
+<p>and chain auto-correlation</p>
+<p>Subsample</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">gelman.plot</span>(jags.logit.out)
+<span class="kw">autocorr.plot</span>(jags.logit.out)
+
+<span class="kw">summary</span>(jags.logit.out)
+<span class="kw">plot</span>(jags.logit.out)</code></pre></div>
+<p>for comparison with ML results</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ml.logit.out &lt;-<span class="st"> </span><span class="kw">glm</span>(univ.election <span class="op">~</span><span class="st"> </span>poleff, <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">&quot;logit&quot;</span>), <span class="dt">data=</span>dat)
+<span class="kw">summary</span>(ml.logit.out)</code></pre></div>
+<h3 id="predictions">Predictions</h3>
+<p>Making a prediction with interval for different x values</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># extract coefficients and build a matrix</span>
+alpha.vec &lt;-<span class="st"> </span><span class="kw">unlist</span>(jags.logit.out[,<span class="st">&quot;alpha&quot;</span>])
+beta.vec &lt;-<span class="st"> </span><span class="kw">unlist</span>(jags.logit.out[,<span class="st">&quot;beta&quot;</span>])
+coef.mat &lt;-<span class="st"> </span><span class="kw">cbind</span>(alpha.vec,beta.vec)
+
+<span class="co"># Set up a matrix for x </span>
+<span class="kw">range</span>(dat<span class="op">$</span>poleff) <span class="co"># check the range</span>
+x.var &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="kw">min</span>(dat<span class="op">$</span>poleff),<span class="kw">max</span>(dat<span class="op">$</span>poleff),<span class="dt">by=</span><span class="fl">0.1</span>)
+x.mat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dv">1</span>,x.var)
+
+<span class="co"># Prediction</span>
+predict.mat &lt;-<span class="st"> </span>coef.mat<span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(x.mat)
+predict.mat &lt;-<span class="st"> </span><span class="kw">exp</span>(predict.mat)<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span><span class="kw">exp</span>(predict.mat))
+
+<span class="co"># Calculating the percentiles and mean of predictions</span>
+predict.ci &lt;-<span class="st"> </span><span class="kw">apply</span>(predict.mat,<span class="dv">2</span>,quantile,<span class="dt">pr=</span><span class="kw">c</span>(<span class="fl">0.025</span>,<span class="fl">0.5</span>,<span class="fl">0.975</span>))
+predict.mean &lt;-<span class="st"> </span><span class="kw">apply</span>(predict.mat,<span class="dv">2</span>,mean)
+
+<span class="co"># Plot everything</span>
+<span class="kw">plot</span>(x.var,predict.ci[<span class="dv">1</span>,],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))
+<span class="kw">par</span>(<span class="dt">new=</span>T)
+<span class="kw">plot</span>(x.var,predict.ci[<span class="dv">2</span>,],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))
+<span class="kw">par</span>(<span class="dt">new=</span>T)
+<span class="kw">plot</span>(x.var,predict.ci[<span class="dv">3</span>,],<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))
+<span class="kw">par</span>(<span class="dt">new=</span>T)
+<span class="kw">plot</span>(x.var,predict.mean,<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</code></pre></div>
+<h2 id="regression-for-count-variables">Regression for Count Variables</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(dat<span class="op">$</span>poldisc)
+<span class="kw">hist</span>(dat<span class="op">$</span>lr.self)
+
+<span class="kw">plot</span>(dat<span class="op">$</span>poldisc <span class="op">~</span><span class="st"> </span>dat<span class="op">$</span>lr.self)
+pois.out &lt;-<span class="st"> </span><span class="kw">glm</span>(poldisc <span class="op">~</span><span class="st"> </span>lr.self, <span class="dt">family=</span>poisson,<span class="dt">data=</span>dat)
+<span class="kw">summary</span>(pois.out)</code></pre></div>
+<h3 id="jags-model">JAGS Model</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pois.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">   for (i in 1:N){</span>
+<span class="st">       y[i] ~ dpois(lambda[i])</span>
+<span class="st">       log(lambda[i]) &lt;- inprod(X[i,],beta[])</span>
+<span class="st">   }</span>
+
+<span class="st">  for (j in 1:J){</span>
+<span class="st">    beta[j] ~ dnorm(0,0.001)</span>
+<span class="st">  }</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(pois.model, <span class="st">&quot;Bayes_Poisson_Student_Survey.bug&quot;</span>)
+
+jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(
+  <span class="dt">y =</span> dat<span class="op">$</span>poldisc,
+  <span class="dt">N =</span> <span class="kw">nrow</span>(dat),
+  <span class="dt">X =</span> <span class="kw">cbind</span>(<span class="dv">1</span>, dat<span class="op">$</span>lr.self),
+  <span class="dt">J =</span> <span class="dv">2</span> <span class="co">#dim(X)[2]</span>
+)
+
+<span class="co"># y &lt;- dat$poldisc</span>
+<span class="co"># X &lt;- cbind(1,dat$lr.self)</span>
+<span class="co"># </span>
+<span class="co"># N &lt;- length(y)</span>
+<span class="co"># J &lt;- dim(X)[2]</span>
+<span class="co"># </span>
+<span class="co"># jags.data &lt;- list(y=y,N=N,J=J,X=X)</span>
+
+jags.pois &lt;-<span class="st"> </span><span class="kw">jags.model</span>(
+  <span class="dt">file =</span> <span class="st">&quot;Bayes_Poisson_Student_Survey.bug&quot;</span>,
+  <span class="dt">data =</span> jags.data, 
+  <span class="dt">n.chains =</span> <span class="dv">3</span>
+)</code></pre></div>
+<h3 id="delete-missings">Delete missings</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pois.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">   for (i in 1:N){</span>
+<span class="st">       y[i] ~ dpois(lambda[i])</span>
+<span class="st">       log(lambda[i]) &lt;- inprod(X[i,],beta[])</span>
+<span class="st">   }</span>
+
+<span class="st">  for (j in 1:J){</span>
+<span class="st">    beta[j] ~ dnorm(0,0.001)</span>
+<span class="st">  }</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(pois.model, <span class="st">&quot;Bayes_Poisson_Student_Survey.bug&quot;</span>)
+
+dat_clean &lt;-<span class="st"> </span>dat <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">drop_na</span>(lr.self, poldisc) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(lr.self, poldisc) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">cbind</span>(<span class="dv">1</span>, .)
+
+jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(
+  <span class="dt">y =</span> dat_clean<span class="op">$</span>y,
+  <span class="dt">N =</span> <span class="kw">nrow</span>(dat_clean),
+  <span class="dt">X =</span> dat_clean[, <span class="op">-</span><span class="kw">length</span>(dat_clean)],
+  <span class="dt">J =</span> <span class="kw">length</span>(dat_clean) <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="co">#dim(X)[2]</span>
+)
+
+jags.pois &lt;-<span class="st"> </span><span class="kw">jags.model</span>(
+  <span class="dt">file =</span> <span class="st">&quot;Bayes_Poisson_Student_Survey.bug&quot;</span>,
+  <span class="dt">data =</span> jags.data, 
+  <span class="dt">n.chains =</span> <span class="dv">3</span>
+)
+
+<span class="kw">update</span>(jags.pois, <span class="dv">2000</span>)
+
+jags.pois.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(
+  jags.pois,
+  <span class="dt">variable.names =</span> <span class="kw">c</span>(<span class="st">&quot;beta&quot;</span>),
+  <span class="dt">n.iter =</span> <span class="dv">5000</span>, 
+  <span class="dt">thin =</span> <span class="dv">1</span>
+)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(jags.pois.out)
+<span class="kw">gelman.plot</span>(jags.pois.out)
+<span class="kw">summary</span>(jags.pois.out)</code></pre></div>
+<h3 id="impute-missings">Impute Missings</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pois.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">   for (i in 1:N){</span>
+<span class="st">       y[i] ~ dpois(lambda[i])</span>
+<span class="st">       log(lambda[i]) &lt;- inprod(X[i,], beta[])</span>
+<span class="st">       X[i,2] ~ dunif(1, 11)   # Impute by using a uniform distribution</span>
+<span class="st">   }</span>
+
+<span class="st">  for (j in 1:J){</span>
+<span class="st">    beta[j] ~ dnorm(0,0.001)</span>
+<span class="st">  }</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(pois.model, <span class="st">&quot;Bayes_Poisson_Student_Survey.bug&quot;</span>)
+
+y &lt;-<span class="st"> </span>dat<span class="op">$</span>poldisc
+X &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dv">1</span>,dat<span class="op">$</span>lr.self)
+N &lt;-<span class="st"> </span><span class="kw">length</span>(y)
+J &lt;-<span class="st"> </span><span class="kw">dim</span>(X)[<span class="dv">2</span>]
+
+jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">y=</span>y,<span class="dt">N=</span>N,<span class="dt">J=</span>J,<span class="dt">X=</span>X)
+
+jags.pois &lt;-<span class="st"> </span><span class="kw">jags.model</span>(
+  <span class="dt">file =</span> <span class="st">&quot;Bayes_Poisson_Student_Survey.bug&quot;</span>,
+  <span class="dt">datam =</span> jags.data, 
+  <span class="dt">n.chains =</span> <span class="dv">3</span>
+)
+
+<span class="kw">update</span>(jags.pois, <span class="dv">2000</span>)
+
+jags.pois.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(
+  jags.pois,
+  <span class="dt">variable.names =</span> <span class="kw">c</span>(<span class="st">&quot;beta&quot;</span>),
+  <span class="dt">n.iter =</span> <span class="dv">20000</span>, 
+  <span class="dt">thin =</span> <span class="dv">20</span>
+)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(jags.pois.out)
+<span class="kw">gelman.plot</span>(jags.pois.out)
+<span class="kw">summary</span>(jags.pois.out)</code></pre></div>
+<p>For comparison: A single impuration with the mid value</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(<span class="kw">glm</span>(poldisc <span class="op">~</span><span class="st"> </span>lr.self, <span class="dt">family=</span>poisson,<span class="dt">data=</span>dat))
+
+lr.self.imp &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(dat<span class="op">$</span>lr.self),<span class="dv">6</span>,dat<span class="op">$</span>lr.self)
+<span class="kw">cbind</span>(lr.self.imp,dat<span class="op">$</span>lr.self)     <span class="co"># check!</span>
+<span class="kw">summary</span>(<span class="kw">glm</span>(poldisc <span class="op">~</span><span class="st"> </span>lr.self.imp, <span class="dt">family=</span>poisson,<span class="dt">data=</span>dat))</code></pre></div>
+<p>Plotting the predicted size of network</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">beta &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(jags.pois.out)
+
+<span class="co"># Prediction by using quantiles</span>
+x.scale &lt;-<span class="st"> </span><span class="kw">range</span>(dat<span class="op">$</span>lr.self,<span class="dt">na.rm=</span>T)
+x.scale &lt;-<span class="st"> </span><span class="kw">seq</span>(x.scale[<span class="dv">1</span>],x.scale[<span class="dv">2</span>],<span class="dt">length.out=</span><span class="dv">100</span>)
+X0 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dv">1</span>,x.scale)
+predicted &lt;-<span class="st"> </span>beta <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(X0)
+predicted &lt;-<span class="st"> </span><span class="kw">exp</span>(predicted)
+predicted &lt;-<span class="st"> </span><span class="kw">apply</span>(predicted,<span class="dv">2</span>,quantile,<span class="kw">c</span>(.<span class="dv">05</span>,.<span class="dv">5</span>,.<span class="dv">95</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>){
+<span class="kw">plot</span>(dat<span class="op">$</span>lr.self,<span class="kw">jitter</span>(dat<span class="op">$</span>poldis),<span class="dt">xlab=</span><span class="st">&quot;Left Right Ideology&quot;</span>,
+                                                <span class="dt">ylab=</span><span class="st">&quot;Size of pol.disc.network&quot;</span>)
+<span class="cf">if</span> (i<span class="op">==</span><span class="dv">2</span>){
+   <span class="kw">lines</span>(x.scale,predicted[<span class="dv">2</span>,],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>)
+   <span class="kw">lines</span>(x.scale,predicted[<span class="dv">1</span>,],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>,<span class="dt">lty=</span><span class="dv">2</span>)
+   <span class="kw">lines</span>(x.scale,predicted[<span class="dv">3</span>,],<span class="dt">col=</span><span class="st">&quot;red&quot;</span>,<span class="dt">lty=</span><span class="dv">2</span>)
+   }
+}
+<span class="co">#dev.off()</span></code></pre></div>
+<h2 id="negative-binomial-regression">Negative binomial regression</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nb.out &lt;-<span class="st"> </span><span class="kw">glm.nb</span>(poldisc <span class="op">~</span><span class="st"> </span>lr.self,<span class="dt">data=</span>dat)
+<span class="kw">summary</span>(nb.out)
+
+<span class="co"># for comparison</span>
+pois.out &lt;-<span class="st"> </span><span class="kw">glm</span>(poldisc <span class="op">~</span><span class="st"> </span>lr.self, <span class="dt">family=</span>poisson,<span class="dt">data=</span>dat)
+<span class="kw">summary</span>(pois.out)</code></pre></div>
+<h3 id="rjags">RJAGS</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nb.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">   for (i in 1:N){</span>
+<span class="st">       y[i] ~ dpois(lambda2[i])</span>
+<span class="st">       lambda2[i] &lt;- lambda[i]* rho[i]</span>
+<span class="st">       rho[i] ~ dgamma(r,r)</span>
+<span class="st">       log(lambda[i]) &lt;- inprod(X[i,],beta[])</span>
+<span class="st">       X[i,2] ~ dunif(1,11)   # Impute by using a uniform distribution</span>
+<span class="st">   }</span>
+
+<span class="st">  for (j in 1:J){</span>
+<span class="st">    beta[j] ~ dnorm(0,0.001)</span>
+<span class="st">  }</span>
+
+<span class="st"> r ~ dgamma(0.0001,0.0001)</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(nb.model,
+      <span class="st">&quot;Bayes_NB_Student_Survey_JAGS.bug&quot;</span>)
+
+y &lt;-<span class="st"> </span>dat<span class="op">$</span>poldis
+N &lt;-<span class="st"> </span><span class="kw">length</span>(y)
+X &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dv">1</span>,dat<span class="op">$</span>lr.self)
+J &lt;-<span class="st"> </span><span class="kw">dim</span>(X)[<span class="dv">2</span>]
+jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">y=</span>y,<span class="dt">N=</span>N,<span class="dt">J=</span>J,<span class="dt">X=</span>X)
+jags.nb &lt;-<span class="st"> </span><span class="kw">jags.model</span>(<span class="dt">file=</span>
+                        <span class="st">&quot;Bayes_NB_Student_Survey_JAGS.bug&quot;</span>,
+                      <span class="dt">data=</span>jags.data, <span class="dt">n.chains=</span><span class="dv">3</span>)
+
+parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;beta&quot;</span>,<span class="st">&quot;r&quot;</span>)
+
+<span class="kw">update</span>(jags.nb, <span class="dv">2000</span>)
+
+jags.nb.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(jags.nb,
+                            <span class="dt">variable.names=</span>parameters,
+                            <span class="dt">n.iter=</span><span class="dv">20000</span>, <span class="dt">thin=</span><span class="dv">10</span>)
+<span class="kw">plot</span>(jags.nb.out)
+<span class="kw">gelman.plot</span>(jags.nb.out)
+
+<span class="kw">summary</span>(jags.nb.out)</code></pre></div>
+<h3 id="another">Another</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nb2.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st"> for (i in 1:N) {</span>
+<span class="st">    y[i] ~ dnegbin(p[i],r)</span>
+<span class="st">    p[i] &lt;- r/(r+lambda[i])</span>
+<span class="st">    log(lambda[i]) &lt;- inprod(X[i,],beta[])</span>
+<span class="st">    X[i,2] ~ dunif(1,11)   # Impute by using a uniform distribution</span>
+<span class="st"> }</span>
+
+<span class="st"> for (j in 1:J){</span>
+<span class="st">    beta[j] ~ dnorm(0,0.001)</span>
+<span class="st"> }</span>
+
+<span class="st"> r ~ dgamma(0.001,0.001)</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(nb2.model,<span class="st">&quot;Bayes_NB2_Student_Survey_JAGS.bug&quot;</span>)
+
+jags.nb2 &lt;-<span class="st"> </span><span class="kw">jags.model</span>(<span class="dt">file=</span>
+                        <span class="st">&quot;Bayes_NB2_Student_Survey_JAGS.bug&quot;</span>,
+                      <span class="dt">data=</span>jags.data, <span class="dt">n.chains=</span><span class="dv">3</span>)
+
+parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;beta&quot;</span>,<span class="st">&quot;r&quot;</span>)
+
+<span class="kw">update</span>(jags.nb2, <span class="dv">2000</span>)
+
+jags.nb2.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(jags.nb2,
+                            <span class="dt">variable.names=</span>parameters,
+                            <span class="dt">n.iter=</span><span class="dv">2000</span>, <span class="dt">thin=</span><span class="dv">1</span>)
+<span class="kw">summary</span>(jags.nb2.out)
+
+<span class="co"># to compare</span>
+<span class="kw">summary</span>(jags.nb.out)</code></pre></div>
+<h1 id="deviance-and-dic">Deviance and DIC</h1>
+<p>Task: Calculate Deviance Information Criterion of the following Poisson Model</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Calculate LL in JAGS</span>
+pois.model.loglike &lt;-<span class="st"> &quot;model{</span>
+<span class="st">   for (i in 1:N){</span>
+<span class="st">       y[i] ~ dpois(lambda[i])</span>
+<span class="st">       log(lambda[i]) &lt;- inprod(X[i,],beta[])</span>
+<span class="st">       # Log-Likelihood of individual response</span>
+<span class="st">       loglike[i] &lt;- y[i]*log(lambda[i]) - lambda[i] - logfact(y[i])</span>
+<span class="st">   }</span>
+
+<span class="st">  for (j in 1:J){</span>
+<span class="st">    beta[j] ~ dnorm(0,0.001)</span>
+<span class="st">  }</span>
+<span class="st">  </span>
+<span class="st">  LL &lt;- sum(loglike[]) </span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(pois.model.loglike,
+      <span class="st">&quot;Bayes_Poisson_loglike_Student_Survey.bug&quot;</span>)
+
+y &lt;-<span class="st"> </span>dat<span class="op">$</span>poldisc
+X &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dv">1</span>,dat<span class="op">$</span>lr.self)
+X &lt;-<span class="st"> </span><span class="kw">na.omit</span>(X)                   <span class="co"># Omit missings in X</span>
+y &lt;-<span class="st"> </span>y[<span class="op">-</span><span class="kw">attributes</span>(X)<span class="op">$</span>na.action]  <span class="co"># Omit the correspnding obs in y</span>
+
+N &lt;-<span class="st"> </span><span class="kw">length</span>(y)
+J &lt;-<span class="st"> </span><span class="kw">dim</span>(X)[<span class="dv">2</span>]
+
+jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">y=</span>y,<span class="dt">N=</span>N,<span class="dt">J=</span>J,<span class="dt">X=</span>X)
+jags.pois &lt;-<span class="st"> </span><span class="kw">jags.model</span>(<span class="dt">file=</span>
+                        <span class="st">&quot;Bayes_Poisson_loglike_Student_Survey.bug&quot;</span>,
+                      <span class="dt">data=</span>jags.data, <span class="dt">n.chains=</span><span class="dv">3</span>)
+
+<span class="kw">update</span>(jags.pois, <span class="dv">2000</span>)
+
+jags.pois.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(jags.pois,
+                            <span class="dt">variable.names=</span><span class="kw">c</span>(<span class="st">&quot;beta&quot;</span>,<span class="st">&quot;LL&quot;</span>),
+                            <span class="dt">n.iter=</span><span class="dv">5000</span>, <span class="dt">thin=</span><span class="dv">1</span>)
+
+
+LL &lt;-<span class="st"> </span><span class="kw">unlist</span>(jags.pois.out[,<span class="st">&quot;LL&quot;</span>])
+
+beta.posterior &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(jags.pois.out[,<span class="kw">c</span>(<span class="st">&quot;beta[1]&quot;</span>,<span class="st">&quot;beta[2]&quot;</span>)])
+
+dev.LL &lt;-<span class="st"> </span>LL <span class="op">*</span><span class="st"> </span><span class="op">-</span><span class="dv">2</span>
+
+dev.bar &lt;-<span class="st"> </span><span class="kw">mean</span>(dev.LL)
+
+<span class="co"># calculating deviance hat</span>
+mean.posterior &lt;-<span class="st"> </span><span class="kw">apply</span>(beta.posterior,<span class="dv">2</span>,mean)
+lambda.hat &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>mean.posterior
+lambda.hat &lt;-<span class="st"> </span><span class="kw">exp</span>(lambda.hat)
+loglike.hat &lt;-<span class="st"> </span>y<span class="op">*</span><span class="kw">log</span>(lambda.hat) <span class="op">-</span><span class="st"> </span>lambda.hat <span class="op">-</span><span class="st"> </span><span class="kw">lfactorial</span>(y)
+dev.hat &lt;-<span class="st"> </span><span class="kw">sum</span>(loglike.hat <span class="op">*</span><span class="st"> </span><span class="op">-</span><span class="dv">2</span>)
+
+
+pD &lt;-<span class="st"> </span>dev.bar <span class="op">-</span><span class="st"> </span>dev.hat
+dev.bar
+pD
+dev.bar <span class="op">+</span><span class="st"> </span>pD
+
+
+
+<span class="co"># ------------------------------------------------------------------------------</span>
+<span class="co">#    Calculatng deviance II (using dpois())</span>
+<span class="co">#</span>
+beta.posterior &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(jags.pois.out[,<span class="kw">c</span>(<span class="st">&quot;beta[1]&quot;</span>,<span class="st">&quot;beta[2]&quot;</span>)])
+
+<span class="co"># Calculating deviance bar</span>
+lambda &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(beta.posterior)
+lambda &lt;-<span class="st"> </span><span class="kw">exp</span>(lambda)
+loglike &lt;-<span class="st"> </span>lambda
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(lambda)){
+     loglike[,i] &lt;-<span class="st"> </span><span class="kw">dpois</span>(y,<span class="dt">lambda=</span>lambda[,i],<span class="dt">log=</span><span class="ot">TRUE</span>)
+}
+dev.LL2 &lt;-<span class="st"> </span>loglike <span class="op">*</span><span class="st"> </span><span class="op">-</span><span class="dv">2</span>
+dev.LL2 &lt;-<span class="st"> </span><span class="kw">apply</span>(dev.LL2,<span class="dv">2</span>,sum,<span class="dt">na.rm=</span>T)
+
+<span class="kw">plot</span>(dev.LL,dev.LL2)  <span class="co"># check with deviance</span>
+
+dev.bar &lt;-<span class="st"> </span><span class="kw">mean</span>(dev.LL2)
+
+<span class="co"># calculating deviance hat</span>
+mean.posterior &lt;-<span class="st"> </span><span class="kw">apply</span>(beta.posterior,<span class="dv">2</span>,mean)
+lambda.hat &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>mean.posterior
+lambda.hat &lt;-<span class="st"> </span><span class="kw">exp</span>(lambda.hat)
+loglike.hat &lt;-<span class="st"> </span><span class="kw">dpois</span>(y,<span class="dt">lambda=</span>lambda.hat,<span class="dt">log=</span><span class="ot">TRUE</span>)
+dev.hat &lt;-<span class="st"> </span><span class="kw">sum</span>(loglike.hat <span class="op">*</span><span class="st"> </span><span class="op">-</span><span class="dv">2</span>)
+
+
+pD &lt;-<span class="st"> </span>dev.bar <span class="op">-</span><span class="st"> </span>dev.hat
+dev.bar
+pD
+dev.bar <span class="op">+</span><span class="st"> </span>pD
+
+
+<span class="co"># ------------------------------------------------------------------------------</span>
+<span class="co">#    Calculatng deviance III  (using dic-module)</span>
+<span class="co">#</span>
+<span class="kw">load.module</span>(<span class="st">&#39;dic&#39;</span>)
+
+jags.pois.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(jags.pois,
+                            <span class="dt">variable.names=</span><span class="kw">c</span>(<span class="st">&quot;beta&quot;</span>,<span class="st">&quot;LL&quot;</span>,<span class="st">&quot;deviance&quot;</span>),
+                            <span class="dt">n.iter=</span><span class="dv">5000</span>, <span class="dt">thin=</span><span class="dv">1</span>)
+
+<span class="co"># Likelihood (y|beta) and deviance</span>
+posterior.dev &lt;-<span class="st"> </span><span class="kw">unlist</span>(jags.pois.out[,<span class="st">&quot;deviance&quot;</span>])
+beta.posterior &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(jags.pois.out[,<span class="kw">c</span>(<span class="st">&quot;beta[1]&quot;</span>,<span class="st">&quot;beta[2]&quot;</span>)])
+
+dev.bar &lt;-<span class="st"> </span><span class="kw">mean</span>(posterior.dev)
+
+<span class="co"># calculating deviance hat</span>
+mean.posterior &lt;-<span class="st"> </span><span class="kw">apply</span>(beta.posterior,<span class="dv">2</span>,mean)
+lambda.hat &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>mean.posterior
+lambda.hat &lt;-<span class="st"> </span><span class="kw">exp</span>(lambda.hat)
+loglike.hat &lt;-<span class="st"> </span><span class="kw">dpois</span>(y,<span class="dt">lambda=</span>lambda.hat,<span class="dt">log=</span><span class="ot">TRUE</span>)
+dev.hat &lt;-<span class="st"> </span><span class="kw">sum</span>(loglike.hat <span class="op">*</span><span class="st"> </span><span class="op">-</span><span class="dv">2</span>)
+
+
+pD &lt;-<span class="st"> </span>dev.bar <span class="op">-</span><span class="st"> </span>dev.hat
+dev.bar
+pD
+dev.bar <span class="op">+</span><span class="st"> </span>pD
+
+
+<span class="co"># ------------------------------------------------------------------------------</span>
+<span class="co">#    Calculatng deviance IV   (using dic.samples())</span>
+<span class="co">#</span>
+pois.dic.out &lt;-<span class="st"> </span><span class="kw">dic.samples</span>(jags.pois,<span class="dt">n.iter=</span><span class="dv">2000</span>, <span class="dt">thin=</span><span class="dv">1</span>)
+pois.dic.out</code></pre></div>
+</div>
+</div>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<!--<script async src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"async></script>-->
+
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- -->
+</body>
+</html>

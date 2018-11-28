@@ -1,0 +1,202 @@
+---
+title: "Bayesian Statistics"
+subtitle: "Class Assignment 1"
+author: "Simon Roth \\\n nomis.roth@gmx.net"
+date: "28.11.2018"
+output: 
+  pdf_document:
+    number_sections: true
+---
+
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = T, fig.height = 3, fig.width = 4, fig.align = "center")
+```
+
+
+## Packages {-}
+
+*Note: This is powerful R-markdown document which combines the entire code, outputs and text. If you don't have pacman installed, just do it once and it will manage all the rest of the dependecies.*
+
+```{r}
+pacman::p_load(rjags, dplyr, purrr, tidyr, ggplot2, broom, rjags, texreg, ggthemes, janitor, knitr)
+ggplot2::theme_set(theme_bw())
+set.seed(2018)
+```
+
+
+## Data {-}
+
+A reduced dataset of Student Panel Survey during the Lecture in Introduction to Political Methodology Winter term 2016/2017 at the University of Konstanz 
+
+* `poleff` Political Efficacy (Likert Score based on 7 items) A larger value = higher level of efficacy
+* `friend` Number of alteri in friendship network
+* `poldisc` Number of alteri in political discussion network
+* `lr.self` Ideological orientation (left right self-placement) 1: Left <- -> 11: Right
+* `lr.self.2` Ideological orientation (left right self-placement, second measurement) 1: Left <- -> 11: Right
+* `univ.election` Vote intention at the next university election. 1: Yes; 0: other (No and DK)
+* `polint` interest at university politics 1: not interested at all <- -> 5 strongly interested
+* `tuition` opinion on the general tuition fee for German universities 1: support; 2: reject; 3: indifferent
+* `acceptable` acceptable level of the tuition fee (in Euro per Semester) (Only those who support the tuition fee or indifferent)
+* protest1 - protest6 willingness to participate a protest action against the general tuition fee 1: yes; 0: no
+    + `protest1` demonstration in Konstanz 
+    + `protest2` demonstration in Stuttgart 
+    + `protest3` giving signature at petitions 
+    + `protest4` strike 
+    + `protest5` occupation of university buildings 
+    + `protest6` legal dispute at courts
+
+
+```{r}
+dat <- get(load("../data/Bayes_Student_Survey.RData")) %>% 
+  mutate(friend_log = log(friend + 1))
+
+# glimpse(dat)
+```
+
+
+# Frequentist Estimation
+
+Estimate the parameters of a bivariate regression via OLS. You can choose a dependent variable and one independent variable from the dataset for yourself.
+
+Political interest might influence the general openess to communicate and make friends. 
+
+
+```{r, results="asis"}
+dat %>% 
+  ggplot(aes(polint, friend_log)) +
+  geom_jitter() +
+  geom_smooth(method = "lm")
+
+lm(friend_log ~ polint, data = dat) %>% 
+  texreg::texreg(float.pos = "ht!")
+```
+
+
+# Bayesian Estimation
+
+Run the MCMC to obtain the posterior of the same regression model above with 5 chains. You have to run the first 200 iterations without collecting posterior. Thereafter collect your posterior in 1000 iterations. Use the same prior as on the slides. 
+
+
+```{r jagsmodel1, echo = T}
+reg.model <- "model{
+  for (i in 1:N){
+    y[i] ~ dnorm(mu[i], tau)
+    mu[i] <- beta0 + beta1 * x[i]
+  }
+  
+  beta0 ~ dnorm(0, 0.0001)
+  beta1 ~ dnorm(0, 0.0001) 
+  
+  tau ~ dgamma(0.001, 0.001) 
+  sigma <- 1/sqrt(tau)
+}"
+
+write(reg.model, "Bayes_Bivariate_Reg_Student_Survey.bug")
+```
+
+
+```{r}
+jags.data <- list(
+  y = dat$friend_log,
+  x = dat$polint,
+  N = nrow(dat)
+)
+
+jags.inits <- 1:5 %>% 
+  map(~ list(beta1 = runif(1, min = -100, max = 100) %>% round()))
+
+jags.reg <- jags.model(
+  file = "Bayes_Bivariate_Reg_Student_Survey.bug",
+  inits = jags.inits,
+  data = jags.data, 
+  n.chains = length(jags.inits)
+)
+```
+
+
+```{r}
+update(jags.reg, 200)
+
+jags.reg.out <- coda.samples(
+  jags.reg,
+  variable.names = c("beta0", "beta1", "sigma"),
+  n.iter = 1000, 
+  thin = 1
+)
+
+jags.reg.out %>% 
+  summary() %>% 
+  .$statistics %>% 
+  kable
+```
+
+# Check Cnvergence 
+
+based on visible inspection and the Gelman- Rubin-Statistics.
+
+```{r, fig.width = 8, fig.height = 6}
+gelman.plot(jags.reg.out)
+#autocorr.plot(jags.reg.out)
+```
+
+# Report the posterior 
+
+by using summary() and plot().
+
+```{r, fig.width = 8, fig.height = 6, echo = F}
+plot_jags_model <- function(model, terms = c("beta0", "beta1", "sigma")){
+  
+  tidy_bayes_dat <- model %>% 
+    dplyr::tibble(output = .) %>% 
+    dplyr::mutate(chain = as.character(1:n())) %>%
+    dplyr::mutate(output = purrr::map(output, as_tibble)) %>% 
+    tidyr::unnest() %>% 
+    dplyr::group_by(chain) %>% 
+    dplyr::mutate(step = 1:n()) %>% 
+    dplyr::ungroup()
+
+  gg_post <- tidy_bayes_dat %>%   
+    dplyr::select(!!terms, chain) %>% 
+    tidyr::gather(term, estimate, -chain) %>% 
+    ggplot2::ggplot(aes(estimate, fill = chain, colour = chain)) +
+    ggplot2::geom_density(alpha = .3, color = NA) +
+    ggplot2::geom_rug(alpha = .1) +
+    ggplot2::facet_wrap(~term, ncol = 1, scales = "free_x") +
+    ggplot2::theme(legend.position = "bottom")  +
+    ggplot2::ggtitle("Marignal Posterior Distrubtion") +
+    ggthemes::scale_fill_hc()
+  
+  gg_trace <- tidy_bayes_dat %>%   
+    dplyr::select(!!terms, chain, step) %>% 
+    tidyr::gather(term, estimate, -chain, -step) %>% 
+    ggplot2::ggplot(aes(step, estimate, group = chain, colour = chain)) +
+    ggplot2::geom_line(size = .5, alpha = .5) +
+    ggplot2::geom_smooth() +
+    ggplot2::facet_wrap(~term, ncol = 1, scales = "free_y") +
+    ggplot2::theme(legend.position = "bottom") +
+    ggplot2::ggtitle("Trace Plot of MCMC Chains") +
+    ggthemes::scale_colour_hc()
+
+  return(gridExtra::grid.arrange(gg_trace, gg_post, ncol = 2))
+}
+
+plot_jags_model(jags.reg.out)
+```
+
+# Calculate the probability that beta1 is positive
+
+Which percentage of posterior is greater than zero (positive)?
+
+```{r}
+unlist(jags.reg.out) %>% 
+  tibble(p = . > 0) %>% 
+  tabyl(p) %>% 
+  kable
+```
+
+Answer: 99% 
+
+
+# Repeat 2-4 with different prior.
+

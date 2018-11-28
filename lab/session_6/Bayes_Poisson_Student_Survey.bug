@@ -1,0 +1,10 @@
+model{
+   for (i in 1:N){
+       y[i] ~ dpois(lambda[i])
+       log(lambda[i]) <- inprod(X[i,],beta[])
+   }
+
+  for (j in 1:J){
+    beta[j] ~ dnorm(0,0.001)
+  }
+}

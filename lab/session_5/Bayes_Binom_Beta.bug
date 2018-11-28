@@ -1,0 +1,4 @@
+model{
+   y~dbin(p, N)
+   p ~ dbeta(a, b) # Prior
+}

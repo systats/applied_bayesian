@@ -1,0 +1,305 @@
+---
+title: "Lab Session 5"
+output: 
+# pdf_document
+  semantic.doc::semantic_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+<br>
+<div class = "ui text container">
+
+<h1 class = "ui header">
+ Lab Session 5
+</h1>
+
+
+* posterior correlated := autokorrelation or multicolinearity.
+
+
+# Packages 
+
+```{r}
+pacman::p_load(rjags, dplyr, purrr, tidyr, ggplot2, broom, rjags)
+ggplot2::theme_set(theme_bw())
+# tinytex::install_tinytex()
+devtools::session_info()
+set.seed(2018)
+rjags::
+```
+
+
+
+# Bayes Regression: Beta Binomial
+
+## Data
+
+* `p` = probability of success
+* `N` = Number of trials
+
+```{r}
+a <- 1 
+b <- 1
+
+beta_dist <- function(x) dbeta(x, a, b)
+curve(beta_dist, 0, 1)
+```
+
+
+
+```{r}
+binom.model <- "model{
+   y~dbin(p, N)
+   p ~ dbeta(a, b) # Prior
+}"
+
+write(binom.model, "Bayes_Binom_Beta.bug")
+
+# Data 
+jags.data <- list(y = 60, N = 100, a = 3, b = 1.5)
+
+# Running JAGS
+jags.reg <- jags.model(
+  file = "Bayes_Binom_Beta.bug",
+  data = jags.data, 
+  n.chains = 3
+)
+
+# Burn in phase (warm up)
+update(jags.reg, 1000)
+
+jags.out <- coda.samples(
+  jags.reg,
+  variable.name =  c("p"),
+  n.iter = 1000, 
+  thin = 1
+)
+
+# Simple description of posterior
+summary(jags.out)
+plot(jags.out)
+
+# Which percentage of posterior p>0.5 ?
+p <- unlist(jags.out)
+
+tibble(dens = p > 0.5) %>% 
+  janitor::tabyl(dens)
+
+hist(p)
+plot(density(p))
+```
+
+
+# Bayes Regression: Student Survey
+
+## Data
+
+```{r}
+dat <- get(load("data/Bayes_Student_Survey.RData")) %>% 
+  mutate(friend_log = log(friend + 1))
+
+glimpse(dat)
+```
+
+
+A reduced dataset of Student Panel Survey during the Lecture in Introduction to Political Methodology Winter term 2016/2017 at the University of Konstanz 
+
+* `poleff` Political Efficacy (Likert Score based on 7 items) A larger value = higher level of efficacy
+* `friend` Number of alteri in friendship network
+* `poldisc` Number of alteri in political discussion network
+* `lr.self` Ideological orientation (left right self-placement) 1: Left <- -> 11: Right
+* `lr.self.2` Ideological orientation (left right self-placement, second measurement) 1: Left <- -> 11: Right
+* `univ.election` Vote intention at the next university election. 1: Yes; 0: other (No and DK)
+* `polint` interest at university politics 1: not interested at all <- -> 5 strongly interested
+* `tuition` opinion on the general tuition fee for German universities 1: support; 2: reject; 3: indifferent
+* `acceptable` acceptable level of the tuition fee (in Euro per Semester) (Only those who support the tuition fee or indifferent)
+* protest1 - protest6 willingness to participate a protest action against the general tuition fee 1: yes; 0: no
+    + `protest1` demonstration in Konstanz 
+    + `protest2` demonstration in Stuttgart 
+    + `protest3` giving signature at petitions 
+    + `protest4` strike 
+    + `protest5` occupation of university buildings 
+    + `protest6` legal dispute at courts
+
+
+> **Task:** Estimate the effect of the size of friendship network on pol. efficacy
+
+
+## OLS regression
+
+```{r}
+dat %>% 
+  select(poleff, friend) %>% 
+  gather(varname, value) %>% 
+  ggplot(aes(value)) +
+  geom_bar(alpha = .6) +
+  facet_wrap(~varname, scales = "free_x")
+```
+
+
+```{r}
+dat %>%
+  ggplot(aes(friend_log, poleff)) +
+  geom_jitter()
+```
+
+
+```{r}
+ols.out <- lm(poleff ~ friend_log, data=dat)
+summary(ols.out)
+```
+
+```{r}
+ols.out %>% 
+  broom::augment() %>%
+  ggplot(aes(friend_log, poleff)) +
+  geom_jitter() +
+  geom_line(aes(friend_log, .fitted))
+  #geom_smooth(method = "lm")
+```
+
+
+## rjags
+
+
+$$y_i \sim N(\mu, \tau)$$
+$$\mu = \beta_0 + \beta_1 x_1$$
+
+
+* tau != variance but precision (inverse of variance); with certain tau we have certain sigma, not specified in then model. 
+* what do with sigma? is determined by tau, only for extractiuon purpose.
+
+
+```{r}
+# JAGS Modell
+reg.model <- "model{
+  for (i in 1:N){
+    y[i] ~ dnorm(mu[i], tau)
+    mu[i] <- beta0 + beta1 * x[i]
+  }
+  
+  beta0 ~ dnorm(0, 0.0001)
+  beta1 ~ dnorm(0, 0.0001) 
+  
+  tau ~ dgamma(0.001, 0.001) 
+  sigma <- 1/sqrt(tau)
+}"
+
+write(reg.model, "Bayes_Bivariate_Reg_Student_Survey.bug")
+```
+
+
+```{r}
+jags.data <- list(
+  y = dat$poleff,
+  x = dat$friend_log,
+  N = length(dat$poleff)
+)
+
+# three different intial values for beta1
+jags.inits <- list(
+  list(beta1 = 323),
+  list(beta1 = 5000),
+  list(beta1 = -10)
+)
+
+# jags_init <- function(){
+# list(
+#   list(beta1 = 323),
+#   list(beta1 = 5000),
+#   list(beta1 = -10)
+# )
+# }
+# jags_init()
+
+jags.reg <- jags.model(
+  file = "Bayes_Bivariate_Reg_Student_Survey.bug",
+  inits = jags.inits,
+  data = jags.data, 
+  n.chains=3
+)
+```
+
+```{r}
+update(jags.reg, 2000)
+jags.reg.out <- coda.samples(jags.reg,
+                             variable.names=c("beta0","beta1","sigma"),
+                             n.iter=2000, thin=1)
+
+jags.reg.out %>% 
+  summary() %>% 
+  .$statistics
+```
+
+* Question: Do we have autokorrelation in the data? Why?
+* Does the SE gets smaller through thinnin?
+* SD of posterior can be large if inital values are included.
+* 
+
+## Posterior Estimates
+
+```{r}
+tidy_bayes_dat <- jags.reg.out %>% 
+  tibble(output = .) %>% 
+  mutate(chain = as.character(1:n())) %>%
+  mutate(output = map(output, as_tibble)) %>% 
+  tidyr::unnest() %>% 
+  group_by(chain) %>% 
+  mutate(step = 1:n()) %>% 
+  ungroup
+```
+
+
+```{r}
+(gg_post <- tidy_bayes_dat %>%   
+  select(beta0, beta1, sigma, chain) %>% 
+  gather(term, estimate, -chain) %>% 
+  ggplot(aes(estimate, fill = chain, colour = chain)) +
+  geom_density(alpha = .3, color = NA) +
+  # geom_eyeh() + 
+  #geom_vline(xintercept = mean(tidy_bayes_dat$sigma), linetype = 2) +
+  geom_rug(alpha = .1) +
+  facet_wrap(~term, ncol = 1, scales = "free_x") +
+  theme(legend.position = "bottom")  +
+  ggtitle("Marignal Posterior Distrubtion"))
+```
+
+```{r}
+tidy_bayes_dat %>%   
+  select(beta0, beta1, chain) %>% 
+  gather(term, estimate, -chain) %>% 
+  group_by(term) %>%
+  summarise(estimate = list(quantile(estimate, ppoints(100)))) %>% 
+  ungroup %>% 
+  unnest %>% 
+  ggplot(aes(x = estimate)) +
+  geom_dotplot(binwidth = .04) +
+  facet_wrap(~term, ncol = 1, scales = "free_x")
+```
+
+
+
+
+```{r}
+(gg_trace <- tidy_bayes_dat %>%   
+  select(beta0, beta1, sigma, chain, step) %>% 
+  gather(term, estimate, -chain, -step) %>% 
+  ggplot(aes(step, estimate, group = chain, colour = chain)) +
+  geom_line(size = .5, alpha = .5) +
+  facet_wrap(~term, ncol = 1, scales = "free_y") +
+  theme(legend.position = "bottom") +
+  ggtitle("Trace Plot of MCMC Chains"))
+```
+
+
+```{r}
+gridExtra::grid.arrange(gg_trace, gg_post, ncol = 2)
+```
+
+
+
+</div>

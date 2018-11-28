@@ -1,0 +1,30 @@
+---
+title: "Course: applied_bayesian"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Install JAGS
+
+* [brew](https://brew.sh/)
+
+```{bash, eval = F}
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+
+```{bash, eval = F}
+brew install jags
+```
+
+
+## Packages
+
+```{r}
+pacman::p_load(dplyr, ggplot2, rjags, rjags, purrr)
+```
+

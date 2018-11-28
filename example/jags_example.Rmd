@@ -1,0 +1,309 @@
+---
+title: "Intro rjags"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Install JAGS
+
+* [brew](https://brew.sh/)
+
+```{bash, eval = F}
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+
+```{bash, eval = F}
+brew install jags
+```
+
+
+## Packages
+
+```{r}
+pacman::p_load(dplyr, ggplot2, rjags, rjags, purrr)
+```
+
+
+## Pet Data
+
+```{r}
+N <- 50
+true_slope <- 1
+true_intercept <- 5
+true_sigma <- 2
+x <- runif(N, 0, 10)
+y <- rnorm(N, true_slope * x + true_intercept, true_sigma)
+tibble(x, y)
+```
+
+
+## Define Model Structure
+
+```{r}
+model_string <- "
+  model {
+    ## priors:
+    a ~ dunif(0,5)
+    b ~ dunif(-10,10)
+    sigma ~ dunif(0,3)
+    
+    ## structure:
+    for (i in 1:N) {
+        y[i] ~ dnorm(a * x[i] + b, pow(sigma, -2))
+    }
+  }
+"
+```
+
+
+## Define Body
+
+```{r}
+model <- jags.model(file = textConnection(model_string), 
+                   data = list('x' = x,
+                               'y' = y,
+                               'N' = N),
+                   n.chains = 5,
+                   n.adapt = 1000,
+                   inits = list('.RNG.name' = 'base::Mersenne-Twister', 
+                                '.RNG.seed' = 1))
+```
+
+
+## Run Model
+
+```{r}
+output = coda.samples(model = model,
+                      variable.names = c("a", "b", "sigma"), 
+                      n.iter=1000
+                      #thin=5
+                    )
+```
+
+
+```{r}
+print(summary(output))
+plot(output)
+```
+
+```{r}
+library(tidybayes)
+
+output[[1]] %>% 
+  as_tibble %>%
+  ggplot(aes(a)) +
+  geom_histogram(alpha = .5)
+
+tidy_bayes_dat <- output %>% 
+  tibble(output = .) %>% 
+  mutate(id = 1:n()) %>%
+  mutate(output = map(output, as_tibble)) %>% 
+  tidyr::unnest()
+
+tidy_bayes_dat %>%   
+  ggplot(aes(a)) +
+  geom_histogram(alpha = .5) +
+  facet_wrap(~id)
+
+
+
+spread_draws(x, response_sd) %>%
+  head(15) 
+```
+
+
+
+
+
+
+
+## Baysian Estimation
+
+
+## Pet Data
+
+```{r}
+N <- 50
+true_slope <- 1
+true_intercept <- 5
+true_sigma <- 2
+x <- runif(N, 0, 10)
+y <- rnorm(N, true_slope * x + true_intercept, true_sigma)
+tibble(x, y)
+```
+
+
+## Define Model Structure
+
+```{r}
+model_string <- "
+  model {
+    ## priors:
+    a ~ dunif(0,5)
+    b ~ dunif(-10,10)
+    sigma ~ dunif(0,3)
+    
+    ## structure:
+    for (i in 1:N) {
+        y[i] ~ dnorm(a * x[i] + b, pow(sigma, -2))
+    }
+  }
+"
+
+
+lm_code <- function(){
+    ## priors:
+    a ~ dunif(0,5)
+    b ~ dunif(-10,10)
+    sigma ~ dunif(0,3)
+    
+    ## structure:
+    for (i in 1:N) {
+        y[i] ~ dnorm(a * x[i] + b, pow(sigma, -2))
+    }
+}
+
+parse_model <- function(x){
+  x %>% 
+    deparse() %>% 
+    glue::glue_collapse(., "\n") %>% 
+    stringr::str_replace("function.*?\\(\\)", "model")  %>% 
+    textConnection
+}
+
+parse_model(lm_code)
+model_string %>% 
+    textConnection
+```
+
+
+## Define Body
+
+```{r}
+library(rjags)
+parse_jags(lm_code)
+model <- jags.model(file = parse_jags(lm_code), 
+                   data = list('x' = x,
+                               'y' = y,
+                               'N' = N),
+                   n.chains = 5,
+                   n.adapt = 1000,
+                   inits = list('.RNG.name' = 'base::Mersenne-Twister', 
+                                '.RNG.seed' = 1))
+```
+
+
+## Run Model
+
+```{r}
+output <- coda.samples(model = model,
+                      variable.names = c("a", "b", "sigma"), 
+                      n.iter=1000
+                      #thin=5
+                    )
+```
+
+
+
+```{r}
+# Description of the Bayesian model fitted in this file
+# Notation:
+# y_i = repsonse variable for observation t=i,..,N
+# x_i = explanatory variable for obs i
+# alpha, beta = intercept and slope parameters to be estimated
+# sigma = residual standard deviation
+
+# Likelihood:
+# y[i] ~ N(alpha + beta * x[i], sigma^2)
+# Prior
+# alpha ~ N(0,100) - vague priors
+# beta ~ N(0,100)
+# sigma ~ U(0,10)
+
+model_code = '
+model
+{
+  # Likelihood
+  for (i in 1:n) {
+    y[i] ~ dnorm(alpha + beta * x[i], sigma^-2)
+  }
+  # Priors
+  alpha ~ dnorm(0, 100^-2)
+  beta ~ dnorm(0, 100^-2)
+  sigma ~ dunif(0, 10)
+}
+'
+# Load in the Church and White global tide gauge data
+sea_level = read.csv('https://raw.githubusercontent.com/andrewcparnell/tsme_course/master/data/church_and_white_global_tide_gauge.csv')
+
+lm_code <- function(){
+  # Likelihood
+  for (i in 1:n) {
+    year_AD[i] ~ dnorm(a + b1 * sea_level_m[i] + b2 * age_error[i], sigma^-2)
+  }
+  # Priors
+  a ~ dnorm(0, 100^-2)
+  b1 ~ dnorm(0, 100^-2)
+  b2 ~ dnorm(0, 100^-2)
+  sigma ~ dunif(0, 10)
+}
+
+# Set up the data
+
+real_data <- sea_level %>%
+  select(year_AD, sea_level_m, age_error) %>% 
+  as.list() %>% 
+  c(., list(n = nrow(sea_level)))
+
+# Run the model
+model <- jags.model(file = parse_jags(lm_code), 
+                   data = real_data,
+                   n.chains = 5,
+                   n.adapt = 1000,
+                   inits = list('.RNG.name' = 'base::Mersenne-Twister', 
+                                '.RNG.seed' = 1))
+
+output <- coda.samples(model = model,
+                      variable.names = c("a", "b1", "b2", "sigma"), 
+                      n.iter=1000
+                      #thin=5
+                    )
+```
+
+
+```{r}
+print(summary(output))
+plot(output)
+```
+
+```{r}
+library(tidybayes)
+
+output[[1]] %>% 
+  as_tibble %>%
+  gather(term, draw) %>% 
+  ggplot(aes(term, draw)) +
+  geom_boxplot()
+
+tidy_bayes_dat <- output %>% 
+  tibble(output = .) %>% 
+  mutate(id = 1:n()) %>%
+  mutate(output = map(output, as_tibble)) %>% 
+  tidyr::unnest()
+
+tidy_bayes_dat%>%   
+  ggplot(aes(b1)) +
+  geom_histogram(alpha = .5) #+
+  #facet_wrap(~id)
+
+
+
+spread_draws(x, response_sd) %>%
+  head(15) 
+```
+

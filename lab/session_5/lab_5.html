@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<title>Lab Session 5</title>
+
+<!-- https://yihui.name/en/2018/07/latex-math-markdown/-->
+<!-- Just one possible MathJax CDN below. You may use others. -->
+<!--<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"async></script>-->
+<!--<script src="//yihui.name/js/math-code.js"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.js"></script>
+
+<!-- calender cdn -->
+<script src="https://cdn.rawgit.com/mdehoog/Semantic-UI-Calendar/76959c6f7d33a527b49be76789e984a0a407350b/dist/calendar.min.js"></script>
+
+<!-- data table cdn -->
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.min.css">
+
+
+
+<!-- better use rmarkdown internal syntax highlighting -->
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/languages/r.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>--->
+<!-- down before body tag -->
+<!--<script>hljs.initHighlightingOnLoad();</script>-->
+
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<style type="text/css">
+pre, code {
+  background-color: #f7f7f7;
+  border-radius: 3px;
+  color: #333;
+  white-space: pre-wrap;    
+}
+pre {
+  border-radius: 3px;
+  margin: 5px 0px 10px 0px;
+  padding: 10px;
+}
+pre:not([class]) {
+  background-color: white;
+}
+code:not([class]) {
+  background-color: white;
+}
+code {
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 85%;
+}
+p > code, li > code {
+  padding: 2px 0px;
+}
+</style>
+
+</head>
+<body>
+<div class = "wrapper">
+<br> <br>
+<div class="ui text container">
+<h1 class="ui header">
+Lab Session 5
+</h1>
+<ul>
+<li>posterior correlated := autokorrelation or multicolinearity.</li>
+</ul>
+<h1 id="packages">Packages</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pacman<span class="op">::</span><span class="kw">p_load</span>(rjags, dplyr, purrr, tidyr, ggplot2, broom, rjags)
+ggplot2<span class="op">::</span><span class="kw">theme_set</span>(<span class="kw">theme_bw</span>())
+<span class="co"># tinytex::install_tinytex()</span>
+devtools<span class="op">::</span><span class="kw">session_info</span>()</code></pre></div>
+<pre><code>## ─ Session info ──────────────────────────────────────────────────────────
+##  setting  value                       
+##  version  R version 3.5.1 (2018-07-02)
+##  os       macOS High Sierra 10.13.6   
+##  system   x86_64, darwin15.6.0        
+##  ui       X11                         
+##  language (EN)                        
+##  collate  en_US.UTF-8                 
+##  ctype    en_US.UTF-8                 
+##  tz       Europe/Berlin               
+##  date     2018-11-21                  
+## 
+## ─ Packages ──────────────────────────────────────────────────────────────
+##  package      * version    date       lib source        
+##  assertthat     0.2.0      2017-04-11 [1] CRAN (R 3.5.0)
+##  backports      1.1.2      2017-12-13 [1] CRAN (R 3.5.0)
+##  base64enc      0.1-3      2015-07-28 [1] CRAN (R 3.5.0)
+##  bindr          0.1.1      2018-03-13 [1] CRAN (R 3.5.0)
+##  bindrcpp       0.2.2      2018-03-29 [1] CRAN (R 3.5.0)
+##  broom        * 0.5.0      2018-07-17 [1] CRAN (R 3.5.0)
+##  callr          3.0.0      2018-08-24 [1] CRAN (R 3.5.0)
+##  cli            1.0.1      2018-09-25 [1] CRAN (R 3.5.0)
+##  coda         * 0.19-2     2018-10-08 [1] CRAN (R 3.5.0)
+##  colorspace     1.3-2      2016-12-14 [1] CRAN (R 3.5.0)
+##  crayon         1.3.4      2017-09-16 [1] CRAN (R 3.5.0)
+##  desc           1.2.0      2018-05-01 [1] CRAN (R 3.5.0)
+##  devtools       2.0.1      2018-10-26 [1] CRAN (R 3.5.1)
+##  digest         0.6.18     2018-10-10 [1] CRAN (R 3.5.0)
+##  dplyr        * 0.7.8      2018-11-10 [1] CRAN (R 3.5.0)
+##  evaluate       0.12       2018-10-09 [1] CRAN (R 3.5.0)
+##  fs             1.2.6      2018-08-23 [1] CRAN (R 3.5.0)
+##  ggplot2      * 3.1.0      2018-10-25 [1] CRAN (R 3.5.0)
+##  glue           1.3.0      2018-07-17 [1] CRAN (R 3.5.0)
+##  gtable         0.2.0      2016-02-26 [1] CRAN (R 3.5.0)
+##  htmltools      0.3.6      2017-04-28 [1] CRAN (R 3.5.0)
+##  knitr          1.20       2018-02-20 [1] CRAN (R 3.5.0)
+##  lattice        0.20-35    2017-03-25 [1] CRAN (R 3.5.1)
+##  lazyeval       0.2.1      2017-10-29 [1] CRAN (R 3.5.0)
+##  magrittr       1.5        2014-11-22 [1] CRAN (R 3.5.0)
+##  memoise        1.1.0      2017-04-21 [1] CRAN (R 3.5.0)
+##  munsell        0.5.0      2018-06-12 [1] CRAN (R 3.5.0)
+##  nlme           3.1-137    2018-04-07 [1] CRAN (R 3.5.1)
+##  pacman         0.5.0      2018-10-22 [1] CRAN (R 3.5.0)
+##  pillar         1.3.0      2018-07-14 [1] CRAN (R 3.5.0)
+##  pkgbuild       1.0.2      2018-10-16 [1] CRAN (R 3.5.0)
+##  pkgconfig      2.0.2      2018-08-16 [1] CRAN (R 3.5.0)
+##  pkgload        1.0.2      2018-10-29 [1] CRAN (R 3.5.0)
+##  plyr           1.8.4      2016-06-08 [1] CRAN (R 3.5.0)
+##  prettyunits    1.0.2      2015-07-13 [1] CRAN (R 3.5.0)
+##  processx       3.2.0      2018-08-16 [1] CRAN (R 3.5.0)
+##  ps             1.2.1      2018-11-06 [1] CRAN (R 3.5.0)
+##  purrr        * 0.2.5      2018-05-29 [1] CRAN (R 3.5.0)
+##  R6             2.3.0      2018-10-04 [1] CRAN (R 3.5.0)
+##  Rcpp           1.0.0      2018-11-07 [1] CRAN (R 3.5.0)
+##  remotes        2.0.2      2018-10-30 [1] CRAN (R 3.5.0)
+##  rjags        * 4-8        2018-10-19 [1] CRAN (R 3.5.0)
+##  rlang          0.3.0.1    2018-10-25 [1] CRAN (R 3.5.0)
+##  rmarkdown      1.10       2018-06-11 [1] CRAN (R 3.5.0)
+##  rprojroot      1.3-2      2018-01-03 [1] CRAN (R 3.5.0)
+##  scales         1.0.0      2018-08-09 [1] CRAN (R 3.5.0)
+##  semantic.doc   0.0.0.9000 2018-11-20 [1] local         
+##  sessioninfo    1.1.1      2018-11-05 [1] CRAN (R 3.5.0)
+##  stringi        1.2.4      2018-07-20 [1] CRAN (R 3.5.0)
+##  stringr        1.3.1      2018-05-10 [1] CRAN (R 3.5.0)
+##  tibble         1.4.2      2018-01-22 [1] CRAN (R 3.5.0)
+##  tidyr        * 0.8.2      2018-10-28 [1] CRAN (R 3.5.0)
+##  tidyselect     0.2.5      2018-10-11 [1] CRAN (R 3.5.0)
+##  usethis        1.4.0      2018-08-14 [1] CRAN (R 3.5.0)
+##  withr          2.1.2      2018-03-15 [1] CRAN (R 3.5.0)
+##  yaml           2.2.0      2018-07-25 [1] CRAN (R 3.5.0)
+## 
+## [1] /Library/Frameworks/R.framework/Versions/3.5/Resources/library</code></pre>
+<h1 id="bayes-regression-student-survey">Bayes Regression: Student Survey</h1>
+<h2 id="data">Data</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat &lt;-<span class="st"> </span><span class="kw">get</span>(<span class="kw">load</span>(<span class="st">&quot;data/Bayes_Student_Survey.RData&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">friend_log =</span> <span class="kw">log</span>(friend <span class="op">+</span><span class="st"> </span><span class="dv">1</span>))
+
+<span class="kw">glimpse</span>(dat)</code></pre></div>
+<pre><code>## Observations: 165
+## Variables: 18
+## $ id            &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1...
+## $ male          &lt;dbl&gt; 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, ...
+## $ friend        &lt;dbl&gt; 5, 4, 6, 6, 0, 6, 9, 0, 0, 2, 0, 0, 9, 4, 1, 1, ...
+## $ poldisc       &lt;dbl&gt; 7, 2, 1, 1, 0, 7, 3, 0, 0, 2, 0, 0, 11, 4, 0, 1,...
+## $ poleff        &lt;dbl&gt; 25, 23, 23, 22, 23, 26, 26, 22, 21, 28, 13, 24, ...
+## $ lr.self       &lt;dbl&gt; 2, 3, 8, 5, 8, 4, 6, 5, 7, 5, 6, 7, 2, 6, 5, 3, ...
+## $ lr.self.2     &lt;dbl&gt; 3, NA, 8, 5, 7, 4, 6, 5, NA, 7, 8, NA, 3, 6, 6, ...
+## $ univ.election &lt;dbl&gt; 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, ...
+## $ polint        &lt;dbl&gt; 4, 4, 2, 3, 1, 4, 4, 3, 1, 4, 3, 3, 3, 3, 3, 2, ...
+## $ tuition       &lt;dbl&gt; 2, NA, 2, 2, 3, 2, 2, 2, NA, 3, 2, NA, 2, 2, 2, ...
+## $ acceptable    &lt;dbl&gt; NA, NA, NA, NA, 25, NA, NA, NA, NA, 150, NA, NA,...
+## $ protest1      &lt;dbl&gt; 1, NA, 0, 0, NA, 1, 1, 0, NA, NA, 0, NA, 1, 1, 0...
+## $ protest2      &lt;dbl&gt; 0, NA, 0, 0, NA, 1, 0, 0, NA, NA, 0, NA, 1, 1, 1...
+## $ protest3      &lt;dbl&gt; 1, NA, 1, 1, NA, 1, 1, 1, NA, NA, 1, NA, 1, 1, 1...
+## $ protest4      &lt;dbl&gt; 0, NA, 0, 0, NA, 1, 0, 0, NA, NA, 0, NA, 1, 1, 0...
+## $ protest5      &lt;dbl&gt; 0, NA, 0, 1, NA, 1, 0, 1, NA, NA, 0, NA, 1, 1, 0...
+## $ protest6      &lt;dbl&gt; 0, NA, 0, 0, NA, 0, 0, 1, NA, NA, 0, NA, 1, 1, 1...
+## $ friend_log    &lt;dbl&gt; 1.7917595, 1.6094379, 1.9459101, 1.9459101, 0.00...</code></pre>
+<p>A reduced dataset of Student Panel Survey during the Lecture in Introduction to Political Methodology Winter term 2016/2017 at the University of Konstanz</p>
+<ul>
+<li><code>poleff</code> Political Efficacy (Likert Score based on 7 items) A larger value = higher level of efficacy</li>
+<li><code>friend</code> Number of alteri in friendship network</li>
+<li><code>poldisc</code> Number of alteri in political discussion network</li>
+<li><code>lr.self</code> Ideological orientation (left right self-placement) 1: Left &lt;- -&gt; 11: Right</li>
+<li><code>lr.self.2</code> Ideological orientation (left right self-placement, second measurement) 1: Left &lt;- -&gt; 11: Right</li>
+<li><code>univ.election</code> Vote intention at the next university election. 1: Yes; 0: other (No and DK)</li>
+<li><code>polint</code> interest at university politics 1: not interested at all &lt;- -&gt; 5 strongly interested</li>
+<li><code>tuition</code> opinion on the general tuition fee for German universities 1: support; 2: reject; 3: indifferent</li>
+<li><code>acceptable</code> acceptable level of the tuition fee (in Euro per Semester) (Only those who support the tuition fee or indifferent)</li>
+<li>protest1 - protest6 willingness to participate a protest action against the general tuition fee 1: yes; 0: no
+<ul>
+<li><code>protest1</code> demonstration in Konstanz</li>
+<li><code>protest2</code> demonstration in Stuttgart</li>
+<li><code>protest3</code> giving signature at petitions</li>
+<li><code>protest4</code> strike</li>
+<li><code>protest5</code> occupation of university buildings</li>
+<li><code>protest6</code> legal dispute at courts</li>
+</ul></li>
+</ul>
+<blockquote>
+<p><strong>Task:</strong> Estimate the effect of the size of friendship network on pol. efficacy</p>
+</blockquote>
+<h2 id="ols-regression">OLS regression</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(poleff, friend) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">gather</span>(varname, value) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(value)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">alpha =</span> .<span class="dv">6</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>varname, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>)</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(friend_log, poleff)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_jitter</span>()</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ols.out &lt;-<span class="st"> </span><span class="kw">lm</span>(poleff <span class="op">~</span><span class="st"> </span>friend_log, <span class="dt">data=</span>dat)
+<span class="kw">summary</span>(ols.out)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = poleff ~ friend_log, data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.2357  -2.2357   0.2347   2.2347   8.7643 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  23.2357     0.5520  42.097   &lt;2e-16 ***
+## friend_log    0.7641     0.3710   2.059    0.041 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.566 on 163 degrees of freedom
+## Multiple R-squared:  0.02536,    Adjusted R-squared:  0.01938 
+## F-statistic: 4.241 on 1 and 163 DF,  p-value: 0.04104</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ols.out <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>broom<span class="op">::</span><span class="kw">augment</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(friend_log, poleff)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_jitter</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(friend_log, .fitted))</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="co">#geom_smooth(method = &quot;lm&quot;)</span></code></pre></div>
+<h2 id="rjags">rjags</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># JAGS Modell</span>
+reg.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">  for (i in 1:N){</span>
+<span class="st">    y[i] ~ dnorm(mu[i],tau)</span>
+<span class="st">    mu[i] &lt;- beta0 + beta1 * x[i]</span>
+<span class="st">  }</span>
+<span class="st">  </span>
+<span class="st">  beta0 ~ dnorm(0,0.0001)</span>
+<span class="st">  beta1 ~ dnorm(0,0.0001) </span>
+<span class="st">  </span>
+<span class="st">  tau ~ dgamma(0.001,0.001) </span>
+<span class="st">  sigma &lt;- 1/sqrt(tau)</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(reg.model, <span class="st">&quot;Bayes_Bivariate_Reg_Student_Survey.bug&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(
+  <span class="dt">y =</span> dat<span class="op">$</span>poleff,
+  <span class="dt">x =</span> dat<span class="op">$</span>friend_log,
+  <span class="dt">N =</span> <span class="kw">length</span>(dat<span class="op">$</span>poleff)
+)
+
+<span class="co"># three different intial values for beta1</span>
+jags.inits &lt;-<span class="st"> </span><span class="kw">list</span>(
+  <span class="kw">list</span>(<span class="dt">beta1 =</span> <span class="dv">323</span>),
+  <span class="kw">list</span>(<span class="dt">beta1 =</span> <span class="dv">5000</span>),
+  <span class="kw">list</span>(<span class="dt">beta1 =</span> <span class="op">-</span><span class="dv">10</span>)
+)
+
+jags.reg &lt;-<span class="st"> </span><span class="kw">jags.model</span>(
+  <span class="dt">file =</span> <span class="st">&quot;Bayes_Bivariate_Reg_Student_Survey.bug&quot;</span>,
+  <span class="dt">inits =</span> jags.inits,
+  <span class="dt">data =</span> jags.data, 
+  <span class="dt">n.chains=</span><span class="dv">3</span>
+)</code></pre></div>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 165
+##    Unobserved stochastic nodes: 3
+##    Total graph size: 368
+## 
+## Initializing model</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">update</span>(jags.reg, <span class="dv">2000</span>)
+
+jags.reg.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(jags.reg,
+                             <span class="dt">variable.names=</span><span class="kw">c</span>(<span class="st">&quot;beta0&quot;</span>,<span class="st">&quot;beta1&quot;</span>,<span class="st">&quot;sigma&quot;</span>),
+                             <span class="dt">n.iter=</span><span class="dv">2000</span>, <span class="dt">thin=</span><span class="dv">1</span>)
+
+jags.reg.out <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summary</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>.<span class="op">$</span>statistics</code></pre></div>
+<pre><code>##             Mean        SD    Naive SE Time-series SE
+## beta0 23.2257957 0.5653551 0.007298703     0.01809202
+## beta1  0.7720068 0.3786595 0.004888473     0.01276253
+## sigma  3.5776044 0.2008635 0.002593137     0.00259293</code></pre>
+<ul>
+<li>Question: Do we have autokorrelation in the data? Why?</li>
+<li>Does the SE gets smaller though thinnin?</li>
+</ul>
+<h2 id="posterior-estimates">Posterior Estimates</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tidy_bayes_dat &lt;-<span class="st"> </span>jags.reg.out <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">tibble</span>(<span class="dt">output =</span> .) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">chain =</span> <span class="kw">as.character</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">n</span>())) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">output =</span> <span class="kw">map</span>(output, as_tibble)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>tidyr<span class="op">::</span><span class="kw">unnest</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(chain) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">step =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">n</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>ungroup</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(gg_post &lt;-<span class="st"> </span>tidy_bayes_dat <span class="op">%&gt;%</span><span class="st">   </span>
+<span class="st">  </span><span class="kw">select</span>(beta0, beta1, sigma, chain) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">gather</span>(term, estimate, <span class="op">-</span>chain) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(estimate, <span class="dt">fill =</span> chain, <span class="dt">colour =</span> chain)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">alpha =</span> .<span class="dv">3</span>, <span class="dt">color =</span> <span class="ot">NA</span>) <span class="op">+</span>
+<span class="st">  </span><span class="co"># geom_eyeh() + </span>
+<span class="st">  </span><span class="co">#geom_vline(xintercept = mean(tidy_bayes_dat$sigma), linetype = 2) +</span>
+<span class="st">  </span><span class="kw">geom_rug</span>(<span class="dt">alpha =</span> .<span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>term, <span class="dt">ncol =</span> <span class="dv">1</span>, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)  <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Marignal Posterior Distrubtion&quot;</span>))</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tidy_bayes_dat <span class="op">%&gt;%</span><span class="st">   </span>
+<span class="st">  </span><span class="kw">select</span>(beta0, beta1, chain) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">gather</span>(term, estimate, <span class="op">-</span>chain) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(term) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">estimate =</span> <span class="kw">list</span>(<span class="kw">quantile</span>(estimate, <span class="kw">ppoints</span>(<span class="dv">100</span>)))) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>ungroup <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>unnest <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> estimate)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_dotplot</span>(<span class="dt">binwidth =</span> .<span class="dv">04</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>term, <span class="dt">ncol =</span> <span class="dv">1</span>, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>)</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(gg_trace &lt;-<span class="st"> </span>tidy_bayes_dat <span class="op">%&gt;%</span><span class="st">   </span>
+<span class="st">  </span><span class="kw">select</span>(beta0, beta1, sigma, chain, step) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">gather</span>(term, estimate, <span class="op">-</span>chain, <span class="op">-</span>step) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(step, estimate, <span class="dt">group =</span> chain, <span class="dt">colour =</span> chain)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size =</span> .<span class="dv">5</span>, <span class="dt">alpha =</span> .<span class="dv">5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>term, <span class="dt">ncol =</span> <span class="dv">1</span>, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Trace Plot of MCMC Chains&quot;</span>))</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gridExtra<span class="op">::</span><span class="kw">grid.arrange</span>(gg_trace, gg_post, <span class="dt">ncol =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<h1 id="bayes-regression-beta-binomial">Bayes Regression: Beta Binomial</h1>
+<h2 id="data-1">Data</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">binom.model &lt;-<span class="st"> &quot;model{</span>
+<span class="st">   y~dbin(p,N)</span>
+<span class="st">   p ~ dbeta(1,1) # Prior</span>
+<span class="st">}&quot;</span>
+
+<span class="kw">write</span>(binom.model, <span class="st">&quot;Bayes_Binom_Beta.bug&quot;</span>)
+
+<span class="co"># Data </span>
+jags.data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">y =</span> <span class="dv">60</span>, <span class="dt">N =</span> <span class="dv">100</span>)
+
+<span class="co"># Running JAGS</span>
+jags.reg &lt;-<span class="st"> </span><span class="kw">jags.model</span>(
+  <span class="dt">file =</span> <span class="st">&quot;Bayes_Binom_Beta.bug&quot;</span>,
+  <span class="dt">data =</span> jags.data, 
+  <span class="dt">n.chains =</span> <span class="dv">3</span>
+)</code></pre></div>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 1
+##    Unobserved stochastic nodes: 1
+##    Total graph size: 4
+## 
+## Initializing model</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">update</span>(jags.reg, <span class="dv">1000</span>)
+
+parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;p&quot;</span>)
+jags.out &lt;-<span class="st"> </span><span class="kw">coda.samples</span>(
+  jags.reg,
+  <span class="dt">variable.name =</span> parameters,
+  <span class="dt">n.iter =</span> <span class="dv">1000</span>, 
+  <span class="dt">thin =</span> <span class="dv">1</span>
+)
+
+<span class="co"># Simple description of posterior</span>
+<span class="kw">summary</span>(jags.out)</code></pre></div>
+<pre><code>## 
+## Iterations = 2001:3000
+## Thinning interval = 1 
+## Number of chains = 3 
+## Sample size per chain = 1000 
+## 
+## 1. Empirical mean and standard deviation for each variable,
+##    plus standard error of the mean:
+## 
+##           Mean             SD       Naive SE Time-series SE 
+##      0.5971513      0.0489425      0.0008936      0.0011552 
+## 
+## 2. Quantiles for each variable:
+## 
+##   2.5%    25%    50%    75%  97.5% 
+## 0.4998 0.5643 0.5984 0.6316 0.6899</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(jags.out)</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Which percentage of posterior p&gt;0.5 ?</span>
+p &lt;-<span class="st"> </span><span class="kw">unlist</span>(jags.out)
+
+<span class="kw">table</span>(p <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>)</code></pre></div>
+<pre><code>## 
+## FALSE  TRUE 
+##    77  2923</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(p)</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="kw">density</span>(p))</code></pre></div>
+<p><img src="lab_5_files/figure-html/unnamed-chunk-15-3.png" width="672" /></p>
+</div>
+</div>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<!--<script async src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"async></script>-->
+
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- -->
+</body>
+</html>
