@@ -4,7 +4,7 @@ Applied Bayesian Inference
 These are my personal course materials for: Applied Bayesian Inference - with Susumu Shikano, Constance. The repository comprises:
 
 -   `assign` Couple of Assignments
--   `bib` contains the syllabus and some literture
+-   `bib` contains the syllabus and some literature
 -   `data` pet data
 -   `lab` scripts and code from lab sessions
 -   `slides` course presentations
@@ -14,13 +14,13 @@ Info JAGS
 
 -   Jags another Gibbs Sampler
 -   Clone of Bugs
--   BUGS (Baysian inference Using Gibbs Sampling):
-    1.  Baysian Inference
+-   BUGS (Bayesian inference Using Gibbs Sampling):
+    1.  Bayesian Inference
     2.  Graphical modeling
     3.  simulation-based inference
 -   rjags returns a dynamic model and we can draw samples from this model.
 -   Bugs is inspired by S
--   for loop in bugs are a macro expensions of single line codes (no controll flow statement)
+-   for loop in bugs are a macro expansions of single line codes (no control flow statement)
 
 Install JAGS
 ------------
@@ -39,6 +39,7 @@ Packages
 --------
 
 ``` r
+# install.packages("pacman")
 pacman::p_load(dplyr, ggplot2, rjags, rjags, purrr)
 ```
 
@@ -47,7 +48,7 @@ Other JAGS interfaces
 
 -   `rjags` set up model;
 -   `r2jags` set up, burn in and sample.
--   \`runjags long burn in phase 4000
+-   `runjags` long burn in phase 4000
 
 Define JAGS Models
 ------------------
