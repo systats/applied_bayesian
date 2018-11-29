@@ -4,8 +4,7 @@ Applied Bayesian Inference
 These are my personal course materials for: Applied Bayesian Inference - with Susumu Shikano, Constance. The repository comprises:
 
 -   `assign` Couple of Assignments
--   `bib` contains the syllabus and some literature
--   `data` pet data
+-   `bib` contains the syllabus and some literature <!-- * `data` pet data -->
 -   `lab` scripts and code from lab sessions
 -   `slides` course presentations
 
@@ -48,7 +47,7 @@ Other JAGS interfaces
 
 -   `rjags` set up model;
 -   `r2jags` set up, burn in and sample.
--   `runjags` long burn in phase 4000
+-   \`runjags long burn in phase 4000
 
 Define JAGS Models
 ------------------

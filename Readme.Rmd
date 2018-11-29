@@ -12,7 +12,7 @@ These are my personal course materials for: Applied Bayesian Inference - with Su
 
 * `assign` Couple of Assignments
 * `bib` contains the syllabus and some literature 
-* `data` pet data
+<!-- * `data` pet data -->
 * `lab` scripts and code from lab sessions
 * `slides` course presentations
 
@@ -57,7 +57,7 @@ pacman::p_load(dplyr, ggplot2, rjags, rjags, purrr)
 
 * `rjags` set up model;
 * `r2jags` set up, burn in and sample. 
-* `runjags` long burn in phase 4000
+* `runjags long burn in phase 4000
 
 
 

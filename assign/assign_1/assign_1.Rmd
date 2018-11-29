@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = T, fig.height = 3, fig.width = 4, fig.align = "cent
 
 ## Packages {-}
 
-*Note: This is powerful R-markdown document which combines the entire code, outputs and text. If you don't have pacman installed, just do it once and it will manage all the rest of the dependecies.*
+**Note** *This is Rmarkdown document which combines the entire code, outputs and text. If you don't have pacman installed, just do it once and it will manage all the rest of the dependecies (for ever).*
 
 ```{r}
 pacman::p_load(rjags, dplyr, purrr, tidyr, ggplot2, broom, rjags, texreg, ggthemes, janitor, knitr)
@@ -48,7 +48,7 @@ A reduced dataset of Student Panel Survey during the Lecture in Introduction to 
 
 
 ```{r}
-dat <- get(load("../data/Bayes_Student_Survey.RData")) %>% 
+dat <- get(load("data/Bayes_Student_Survey.RData")) %>% 
   mutate(friend_log = log(friend + 1))
 
 # glimpse(dat)
