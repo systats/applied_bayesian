@@ -14,7 +14,7 @@ These are my personal course materials for: Applied Bayesian Inference - with Su
 * `bib` contains the syllabus and some literature 
 <!-- * `data` pet data -->
 * `lab` scripts and code from lab sessions
-* `slides` course presentations
+<!-- * `slides` course presentations -->
 
 
 ## Info JAGS

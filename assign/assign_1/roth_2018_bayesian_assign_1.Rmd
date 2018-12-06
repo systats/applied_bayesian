@@ -1,8 +1,8 @@
 ---
-title: "Bayesian Statistics"
+title: "Applied Bayesian Statistics"
 subtitle: "Class Assignment 1"
 author: "Simon Roth \\\n nomis.roth@gmx.net"
-date: "28.11.2018"
+date: "5.12.2018"
 output: 
   pdf_document:
     number_sections: true
@@ -19,7 +19,11 @@ knitr::opts_chunk$set(echo = T, fig.height = 3, fig.width = 4, fig.align = "cent
 **Note** *This is Rmarkdown document which combines the entire code, outputs and text. If you don't have pacman installed, just do it once and it will manage all the rest of the dependecies (for ever).*
 
 ```{r}
-pacman::p_load(rjags, dplyr, purrr, tidyr, ggplot2, broom, rjags, texreg, ggthemes, janitor, knitr)
+# install.packages("pacman")
+pacman::p_load(
+  rjags, dplyr, purrr, tidyr, ggplot2, broom,
+  texreg, ggthemes, janitor, knitr
+)
 ggplot2::theme_set(theme_bw())
 set.seed(2018)
 ```
@@ -48,10 +52,8 @@ A reduced dataset of Student Panel Survey during the Lecture in Introduction to 
 
 
 ```{r}
-dat <- get(load("data/Bayes_Student_Survey.RData")) %>% 
-  mutate(friend_log = log(friend + 1))
-
-# glimpse(dat)
+dat <- get(load("data/Bayes_Student_Survey.RData")) 
+  #mutate(friend_log = log(friend + 1))
 ```
 
 
@@ -59,16 +61,26 @@ dat <- get(load("data/Bayes_Student_Survey.RData")) %>%
 
 Estimate the parameters of a bivariate regression via OLS. You can choose a dependent variable and one independent variable from the dataset for yourself.
 
-Political interest might influence the general openess to communicate and make friends. 
+```{r, fig.width = 10}
+left_side <- dat %>% 
+  select(polint, poleff) %>% 
+  gather(var, value) %>%
+  ggplot(aes(value)) + 
+  geom_histogram() +
+  facet_wrap( ~ var, scales = "free_x")
+
+right_side <- dat %>% 
+  ggplot(aes(polint, poleff)) +
+  geom_jitter() +
+  geom_smooth(method = "lm")
+
+gridExtra::grid.arrange(left_side, right_side, ncol = 2)
+```
 
 
 ```{r, results="asis"}
 dat %>% 
-  ggplot(aes(polint, friend_log)) +
-  geom_jitter() +
-  geom_smooth(method = "lm")
-
-lm(friend_log ~ polint, data = dat) %>% 
+  lm(poleff ~ polint, data = .) %>% 
   texreg::texreg(float.pos = "ht!")
 ```
 
@@ -98,13 +110,13 @@ write(reg.model, "Bayes_Bivariate_Reg_Student_Survey.bug")
 
 ```{r}
 jags.data <- list(
-  y = dat$friend_log,
+  y = dat$poleff,
   x = dat$polint,
   N = nrow(dat)
 )
 
 jags.inits <- 1:5 %>% 
-  map(~ list(beta1 = runif(1, min = -100, max = 100) %>% round()))
+  map(~ list(beta1 = runif(1, min = -100, max = 100)))
 
 jags.reg <- jags.model(
   file = "Bayes_Bivariate_Reg_Student_Survey.bug",
@@ -131,9 +143,9 @@ jags.reg.out %>%
   kable
 ```
 
-# Check Cnvergence 
+# Check Convergence 
 
-based on visible inspection and the Gelman- Rubin-Statistics.
+based on visible inspection and the Gelman-Rubin-Statistics.
 
 ```{r, fig.width = 8, fig.height = 6}
 gelman.plot(jags.reg.out)
@@ -165,7 +177,7 @@ plot_jags_model <- function(model, terms = c("beta0", "beta1", "sigma")){
     ggplot2::facet_wrap(~term, ncol = 1, scales = "free_x") +
     ggplot2::theme(legend.position = "bottom")  +
     ggplot2::ggtitle("Marignal Posterior Distrubtion") +
-    ggthemes::scale_fill_hc()
+    ggthemes::scale_fill_gdocs()
   
   gg_trace <- tidy_bayes_dat %>%   
     dplyr::select(!!terms, chain, step) %>% 
@@ -173,10 +185,10 @@ plot_jags_model <- function(model, terms = c("beta0", "beta1", "sigma")){
     ggplot2::ggplot(aes(step, estimate, group = chain, colour = chain)) +
     ggplot2::geom_line(size = .5, alpha = .5) +
     ggplot2::geom_smooth() +
-    ggplot2::facet_wrap(~term, ncol = 1, scales = "free_y") +
+    ggplot2::facet_wrap( ~ term, ncol = 1, scales = "free_y") +
     ggplot2::theme(legend.position = "bottom") +
     ggplot2::ggtitle("Trace Plot of MCMC Chains") +
-    ggthemes::scale_colour_hc()
+    ggthemes::scale_colour_gdocs()
 
   return(gridExtra::grid.arrange(gg_trace, gg_post, ncol = 2))
 }
@@ -189,14 +201,59 @@ plot_jags_model(jags.reg.out)
 Which percentage of posterior is greater than zero (positive)?
 
 ```{r}
-unlist(jags.reg.out) %>% 
+unlist(jags.reg.out[,"beta1"]) %>% 
   tibble(p = . > 0) %>% 
   tabyl(p) %>% 
   kable
 ```
 
-Answer: 99% 
+Answer: 100% 
 
 
 # Repeat 2-4 with different prior.
+
+
+```{r jagsmodel2, echo = T}
+reg.model <- "model{
+  for (i in 1:N){
+    y[i] ~ dnorm(mu[i], tau)
+    mu[i] <- beta0 + beta1 * x[i]
+  }
+  
+  beta0 ~ dnorm(0, 0.0001)
+  beta1 ~ dnorm(0, 0.0001) 
+  
+  tau ~ dgamma(0.01, 0.01) 
+  sigma <- 1/sqrt(tau)
+}"
+
+write(reg.model, "Bayes_Bivariate_Reg_Student_Survey_prior2.bug")
+
+jags.reg2 <- jags.model(
+  file = "Bayes_Bivariate_Reg_Student_Survey_prior2.bug",
+  inits = jags.inits,
+  data = jags.data, 
+  n.chains = length(jags.inits)
+)
+```
+
+
+
+```{r, fig.width = 8, fig.height = 6, echo = F}
+update(jags.reg2, 2000)
+
+jags.reg2.out <- coda.samples(
+  jags.reg2,
+  variable.names = c("beta0", "beta1", "sigma"),
+  n.iter = 5000, 
+  thin = 5
+)
+
+jags.reg2.out %>% 
+  summary() %>% 
+  .$statistics %>% 
+  kable
+
+plot_jags_model(jags.reg2.out)
+```
 
