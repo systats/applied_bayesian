@@ -3,9 +3,9 @@ Applied Bayesian Inference
 
 These are my personal course materials for: Applied Bayesian Inference - with Susumu Shikano, Constance. The repository comprises:
 
--   `assign` Couple of Assignments
+-   `assigns` Couple of Assignments
 -   `bib` contains the syllabus and some literature <!-- * `data` pet data -->
--   `lab` scripts and code from lab sessions <!-- * `slides` course presentations -->
+-   `labs` scripts and code from lab sessions <!-- * `slides` course presentations -->
 
 Info JAGS
 ---------
