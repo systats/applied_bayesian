@@ -57,8 +57,7 @@ pacman::p_load(dplyr, ggplot2, rjags, rjags, purrr)
 
 * `rjags` set up model;
 * `r2jags` set up, burn in and sample. 
-* `runjags long burn in phase 4000
-
+* `runjags` long burn in phase (4000)
 
 
 ## Define JAGS Models

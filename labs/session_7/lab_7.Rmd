@@ -197,11 +197,11 @@ plot(dat$lr.self,jitter(dat$poldis),xlab="Left Right Ideology",
 ## Negative binomial regression
 
 ```{r}
-nb.out <- glm.nb(poldisc ~ lr.self,data=dat)
+nb.out <- MASS::glm.nb(poldisc ~ lr.self, data = dat)
 summary(nb.out)
 
 # for comparison
-pois.out <- glm(poldisc ~ lr.self, family=poisson,data=dat)
+pois.out <- glm(poldisc ~ lr.self, family = poisson, data = dat)
 summary(pois.out)
 ```
 

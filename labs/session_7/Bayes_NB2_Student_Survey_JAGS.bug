@@ -1,0 +1,14 @@
+model{
+ for (i in 1:N) {
+    y[i] ~ dnegbin(p[i],r)
+    p[i] <- r/(r+lambda[i])
+    log(lambda[i]) <- inprod(X[i,],beta[])
+    X[i,2] ~ dunif(1,11)   # Impute by using a uniform distribution
+ }
+
+ for (j in 1:J){
+    beta[j] ~ dnorm(0,0.001)
+ }
+
+ r ~ dgamma(0.001,0.001)
+}
