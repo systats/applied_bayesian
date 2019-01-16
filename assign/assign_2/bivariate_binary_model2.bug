@@ -1,0 +1,14 @@
+model{
+  for (i in 1:N){
+    y[i] ~ dbern(p[i])
+    logit(p[i]) <- ystar[i]
+    ystar[i] <- alpha + beta * x[i]
+    ### LL for Binary Data - From: https://data.princeton.edu/wws509/notes/c3.pdf
+    ll[i] <- y[i]*log(p[i]) + (1 - y[i]) * log(1 - p[i])
+  }
+
+  alpha ~ dnorm(0,0.0001)
+  beta ~ dnorm(0,0.0001)
+
+  LL <- sum(ll[]) 
+}
